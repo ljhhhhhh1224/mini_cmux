@@ -1,0 +1,7 @@
+stages:
+  - format
+
+format:
+  stage: format
+  script:
+    - gofmt -w example/main.go
