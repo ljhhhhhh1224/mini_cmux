@@ -19,6 +19,7 @@ type bufferedReader struct {
 }
 
 func (s *bufferedReader) Read(p []byte) (int, error) {
+
 	if s.bufferSize > s.bufferRead {
 		// If we have already read something from the buffer before, we return the
 		// same data and the last error if any. We need to immediately return,
