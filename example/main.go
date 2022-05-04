@@ -45,8 +45,6 @@ func main() {
 		logging.Error(err)
 	}
 
-	logging.Info("------------------------test ci------------------------")
-
 	time.Sleep(10 * time.Second)
 
 }
