@@ -19,11 +19,12 @@ unittest:
     - go test -race $(go list ./... | grep -v /vendor/)
 
 docker-build:
-  image: docker:latest
   stage: dockerbuild
+  image: docker:latest
+  services:
+    - docker:dind
   before_script:
-    - echo "$CI_REGISTRY_PASSWORD" > password.txt
-    - docker login -username "$CI_REGISTRY_USER" -password-stdin < ./password.txt $CI_REGISTRY
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
     - docker login -u $CI_REGISTRY_USERNAME -p $CI_REGISTRY_PASSWORD registry.gitlab.com
     - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" .
