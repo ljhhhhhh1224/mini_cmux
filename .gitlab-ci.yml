@@ -1,4 +1,4 @@
-image: golang:1.18
+image: docker:20.10.12
 
 before_script:
   - go env -w GO111MODULE=on
