@@ -19,7 +19,7 @@ unittest:
     - go test -race $(go list ./... | grep -v /vendor/)
 
 docker-build:
-  image: golang:latest
+  image: docker:latest
   stage: dockerbuild
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" > password.txt
