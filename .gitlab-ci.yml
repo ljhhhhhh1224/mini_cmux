@@ -19,7 +19,7 @@ unittest:
     - go test -race $(go list ./... | grep -v /vendor/)
 
 docker-build:
-  image: docker:latest
+  image: golang:latest
   stage: dockerbuild
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
