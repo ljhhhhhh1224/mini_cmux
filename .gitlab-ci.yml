@@ -1,7 +1,13 @@
+variables:
+  REPO_NAME: mini_cmux
+  # Please edit to your GitLab project
+
 before_script:
   - go env -w GO111MODULE=on
   - go env -w GOPROXY="https://goproxy.cn,direct"
-
+  - mkdir -p $GOPATH/src/$(dirname $REPO_NAME)
+  - ln -svf $CI_PROJECT_DIR $GOPATH/src/$REPO_NAME
+  - cd $GOPATH/src/$REPO_NAME
 stages:
   - format
   - ut
