@@ -1,0 +1,24 @@
+syntax = "proto3"; //编译器用proto3来解读
+
+option go_package="./;hello_grpc"; //配置 "包路径(从mod下开始写);别名"
+
+package grpc; //这个包是给proto分包用的包
+
+message Req {
+  string message = 1;
+}
+
+message Res {
+  string message = 1;
+  /*
+    还可以写成以下形式
+    string name = 1;从左到右分别是 类型 名称 唯一标识符
+    int32 age = 2;
+    bool sex = 3;
+   */
+}
+
+service HelloGRPC{
+  rpc SayHi(Req) returns (Res);
+  rpc RequestStop(Req) returns (Res);
+}

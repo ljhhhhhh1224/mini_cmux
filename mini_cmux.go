@@ -13,31 +13,26 @@ type Matcher func(io.Reader) bool
 // MatchWriter is a match that can also write response (say to do handshake).
 type MatchWriter func(io.Writer, io.Reader) bool
 
-
 // ErrServerClosed is returned from muxListener.Accept when mux server is closed.
 var ErrServerClosed = errors.New("mux: server closed")
 
 var ErrListenerClosed = errors.New("mux: listener closed")
 
-
-
 func New(l net.Listener) CMux {
 	return &cMux{
-		root:        l,
-		bufLen:      1024,
-		donec:       make(chan struct{}),
+		root:   l,
+		bufLen: 1024,
+		donec:  make(chan struct{}),
 	}
 }
 
 // CMux is a multiplexer for network connections.
 type CMux interface {
-
 	Match(Matcher) net.Listener
 
 	Serve() error
 
 	Close()
-
 }
 
 type matchersListener struct {
@@ -46,14 +41,12 @@ type matchersListener struct {
 }
 
 type cMux struct {
-	root        net.Listener
-	bufLen      int
-	sls         []matchersListener
-	donec       chan struct{}
-	mu          sync.Mutex
+	root   net.Listener
+	bufLen int
+	sls    []matchersListener
+	donec  chan struct{}
+	mu     sync.Mutex
 }
-
-
 
 func (m *cMux) Match(matchers Matcher) net.Listener {
 	matcherWriter := func(w io.Writer, r io.Reader) bool {
@@ -162,7 +155,7 @@ func (l muxListener) Accept() (net.Conn, error) {
 	select {
 	case c, ok := <-l.connc:
 		if !ok {
-			return nil,ErrListenerClosed
+			return nil, ErrListenerClosed
 		}
 		return c, nil
 	case <-l.donec:
@@ -182,7 +175,6 @@ func newMuxConn(c net.Conn) *MuxConn {
 		buf:  bufferedReader{source: c},
 	}
 }
-
 
 func (m *MuxConn) Read(p []byte) (int, error) {
 	return m.buf.Read(p)

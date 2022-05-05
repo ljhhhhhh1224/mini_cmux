@@ -2,15 +2,15 @@ package mini_cmux
 
 import (
 	"bufio"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/hpack"
 	"io"
 	"io/ioutil"
 	"net/http"
+
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/hpack"
 )
 
 // HTTP1HeaderField 返回一个匹配 HTTP 1 连接的第一个请求的头字段的匹配器。
-
 
 func HTTP1HeaderField(name, value string) Matcher {
 	return func(r io.Reader) bool {
@@ -21,24 +21,6 @@ func HTTP1HeaderField(name, value string) Matcher {
 		return req.Header.Get(name) == value
 	}
 }
-
-
-//func HTTP1HeaderField(name, value string) Matcher {
-//	return func(r io.Reader) bool {
-//		return matchHTTP1Field(r, name, func(gotValue string) bool {
-//			return gotValue == value
-//		})
-//	}
-//}
-//
-//func matchHTTP1Field(r io.Reader, name string, matches func(string) bool) (matched bool) {
-//	req, err := http.ReadRequest(bufio.NewReader(r))
-//	if err != nil {
-//		return false
-//	}
-//
-//	return matches(req.Header.Get(name))
-//}
 
 func HTTP2HeaderField(name, value string) Matcher {
 	return func(r io.Reader) bool {

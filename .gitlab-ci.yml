@@ -1,7 +1,13 @@
 stages:
   - format
+  - ut
+  - dockerbuild
 
 format:
   stage: format
   script:
-    - gofmt -w example/main.go
+    - go fmt $(go list ./... | grep -v /vendor/)
+    - go vet $(go list ./... | grep -v /vendor/)
+    - go test -race $(go list ./... | grep -v /vendor/)
+
+

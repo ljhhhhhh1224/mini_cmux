@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 )
+
 // bufferedReader is an optimized implementation of io.Reader that behaves like
 // ```
 // io.MultiReader(bytes.NewReader(buffer.Bytes()), io.TeeReader(source, buffer))
@@ -37,13 +38,13 @@ func (s *bufferedReader) Read(p []byte) (int, error) {
 	// If there is nothing more to return in the sniffed buffer, read from the
 	// source.
 
-		sn, sErr := s.source.Read(p)
-		if sn > 0 && s.sniffing {
-			s.lastErr = sErr
-			if wn, wErr := s.buffer.Write(p[:sn]); wErr != nil {
-				return wn, wErr
-			}
+	sn, sErr := s.source.Read(p)
+	if sn > 0 && s.sniffing {
+		s.lastErr = sErr
+		if wn, wErr := s.buffer.Write(p[:sn]); wErr != nil {
+			return wn, wErr
 		}
+	}
 	return sn, sErr
 }
 
