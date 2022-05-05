@@ -41,6 +41,8 @@ func main() {
 	go syscallOperate.CloseProcess(m, grpcS, httpS)
 
 	logging.Info("------------------------服务器启动成功------------------------")
+	logging.Info("------------------------服务器启动成功------------------------")
+
 	err = m.Serve()
 	if err != nil {
 		logging.Error(err)
