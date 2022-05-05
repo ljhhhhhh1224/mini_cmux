@@ -1,5 +1,4 @@
-image: docker:20.10.12
-
+image: golang:latest
 before_script:
   - go env -w GO111MODULE=on
   - go env -w GOPROXY="https://goproxy.cn,direct"
@@ -21,13 +20,20 @@ unittest:
     - go test -race $(go list ./... | grep -v /vendor/)
 
 docker-build:
+  image: docker:latest
   stage: dockerbuild
+  services:
+    - docker:dind
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
     - docker login -u $CI_REGISTRY_USERNAME -p $CI_REGISTRY_PASSWORD registry.gitlab.com
     - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" .
     - docker push "$CI_REGISTRY_IMAGE${tag}"
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      exists:
+        - Dockerfile
 
 
 
