@@ -1,6 +1,5 @@
 variables:
   REPO_NAME: mini_cmux
-  # Please edit to your GitLab project
 
 before_script:
   - go env -w GO111MODULE=on

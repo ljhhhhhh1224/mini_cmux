@@ -90,18 +90,11 @@ func (m *cMux) Serve() error {
 
 func (m *cMux) serve(c net.Conn, donec <-chan struct{}, wg *sync.WaitGroup) {
 	defer wg.Done()
-	// 将 net.Conn 包装为 MuxConn 并提供对连接数据的透明嗅探
+	// 将 net.Conn 包装为 MuxConn
 	muc := newMuxConn(c)
 
 	// 遍历已注册的匹配器列表
 	for _, sl := range m.sls {
-		//遍历MatchWriter
-
-		// 根据连接的内容返回匹配结果，如匹配且 io.Writer 非空则对 muc.Conn 进行写入
-		// 下面的ss为
-		// matcherWriter := func(w io.Writer, r io.Reader) bool {
-		//  return matchers(r)
-		// }
 		matched := sl.ss(muc.Conn, muc.startSniffing())
 		if matched {
 			muc.doneSniffing()
@@ -115,8 +108,6 @@ func (m *cMux) serve(c net.Conn, donec <-chan struct{}, wg *sync.WaitGroup) {
 			return
 		}
 	}
-	// 如果执行到这里，意味这个连接没有被任何已注册的匹配器所匹配成功
-	// 这里会将 ErrNotMatched 这个错误交给多路复用器的 「错误处理函数」
 	c.Close()
 
 }

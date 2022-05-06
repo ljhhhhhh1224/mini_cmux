@@ -21,7 +21,7 @@ func main() {
 	}
 
 	m := mini_cmux.New(l)
-	//路由
+	//
 	grpcL := m.Match(mini_cmux.HTTP2HeaderField("content-type", "application/grpc"))
 	httpL := m.Match(mini_cmux.HTTP1HeaderField("content-type", "application/json"))
 
@@ -42,10 +42,6 @@ func main() {
 
 	logging.Info("------------------------服务器启动成功------------------------")
 	err = m.Serve()
-	if err != nil {
-		logging.Error(err)
-	}
-
 	time.Sleep(10 * time.Second)
 
 }
