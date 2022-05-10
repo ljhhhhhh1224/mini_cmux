@@ -13,11 +13,6 @@ type Matcher func(io.Reader) bool
 // MatchWriter is a match that can also write response (say to do handshake).
 type MatchWriter func(io.Writer, io.Reader) bool
 
-// ErrServerClosed is returned from muxListener.Accept when mux server is closed.
-var ErrServerClosed = errors.New("mux: server closed")
-
-var ErrListenerClosed = errors.New("mux: listener closed")
-
 func New(l net.Listener) CMux {
 	return &cMux{
 		root:   l,
@@ -146,11 +141,11 @@ func (l muxListener) Accept() (net.Conn, error) {
 	select {
 	case c, ok := <-l.connc:
 		if !ok {
-			return nil, ErrListenerClosed
+			return nil, errors.New("conn error")
 		}
 		return c, nil
 	case <-l.donec:
-		return nil, ErrServerClosed
+		return nil, errors.New("server close")
 	}
 }
 
