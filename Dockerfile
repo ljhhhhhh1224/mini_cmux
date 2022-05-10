@@ -7,4 +7,4 @@ ENV GOPROXY=https://goproxy.cn,direct
 COPY . /$GOPATH/src/mini_cmux/
 WORKDIR /$GOPATH/src/mini_cmux/example
 RUN go build
-CMD ["./example"]
+CMD ["bin/bash","./example"]
