@@ -43,5 +43,4 @@ func main() {
 	logging.Info("------------------------服务器启动成功------------------------")
 	err = m.Serve()
 	time.Sleep(10 * time.Second)
-
 }
