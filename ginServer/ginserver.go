@@ -19,14 +19,14 @@ func SetupRouter() *gin.Engine {
 func get(c *gin.Context) {
 	logging.Info("Receive Http /get request from ", c.ClientIP())
 	c.JSON(http.StatusOK, gin.H{
-		"message": "success get message",
+		"message": "get message successfully",
 	})
 }
 
 func stop(c *gin.Context) {
 	logging.Info("Receive Http /stop request from ", c.ClientIP())
 	c.JSON(http.StatusOK, gin.H{
-		"message": "success stop",
+		"message": "stop successfully",
 	})
 	syscallOperate.GetSyscallChan() <- syscall.SIGINT
 }
