@@ -33,7 +33,6 @@ func TestStop(t *testing.T) {
 		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)
 		So(w.Code, ShouldEqual, http.StatusOK)
-		//assert.Equal(t, http.StatusOK, w.Code)
 		var resp map[string]string
 		err := json.Unmarshal([]byte(w.Body.String()), &resp)
 		So(err, ShouldBeNil)
