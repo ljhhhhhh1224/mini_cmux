@@ -1,12 +1,15 @@
-package mini_cmux
+package test
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"io/ioutil"
+	"mini_cmux"
+	"mini_cmux/grpcServer"
+	hello_grpc "mini_cmux/pb"
 	"net"
 	"net/http"
-	"net/rpc"
 	"runtime"
 	"sort"
 	"strings"
@@ -14,13 +17,21 @@ import (
 	"testing"
 	"time"
 
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 type HTTP1Handler struct{}
 
+const (
+	HTTP1    = "HTTP1"
+	GrpcRESP = "(GRPC)服务端响应SayHi请求"
+)
+
 func (*HTTP1Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "HTTP1")
+	fmt.Fprintf(w, HTTP1)
 }
 
 func HTTP1Client(errChan chan<- error, addr net.Addr) string {
@@ -84,35 +95,63 @@ func HTTP1Server(errCh chan<- error, l net.Listener) {
 }
 
 func TestHTTP1(t *testing.T) {
-	Convey("Test HTTP1 Handler", t, func() {
+	Convey("Test HTTP1", t, func() {
 		servererrChan := make(chan error)
 		clienterrChan := make(chan error)
 		l, _ := net.Listen("tcp", "127.0.0.1:0")
-		m := New(l)
-		httpl := m.Match(HTTP1HeaderField("content-type", "application/json"))
+		m := mini_cmux.New(l)
+		httpl := m.Match(mini_cmux.HTTP1HeaderField("content-type", "application/json"))
 		go HTTP1Server(servererrChan, httpl)
-		go safeServe(servererrChan, m)
+		go Serve(servererrChan, m)
 		resp := HTTP1Client(clienterrChan, l.Addr())
 
 		So(cap(servererrChan), ShouldEqual, 0)
 		So(cap(clienterrChan), ShouldEqual, 0)
-		So(resp, ShouldEqual, "HTTP1")
+		So(resp, ShouldEqual, HTTP1)
 	})
 }
 
-func safeDial(t *testing.T, addr net.Addr) (*rpc.Client, func()) {
-	c, err := rpc.Dial(addr.Network(), addr.String())
+func gRpcServer(errChan chan<- error, l net.Listener) {
+	grpcS := grpc.NewServer()
+	hello_grpc.RegisterHelloGRPCServer(grpcS, &grpcServer.Server{})
+	err := grpcS.Serve(l)
 	if err != nil {
-		t.Fatal(err)
-	}
-	return c, func() {
-		if err := c.Close(); err != nil {
-			t.Fatal(err)
-		}
+		errChan <- err
 	}
 }
 
-func safeServe(errCh chan<- error, muxl CMux) {
+func gRpcClient(errChan chan<- error, addr string) string {
+	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		errChan <- err
+	}
+	defer conn.Close()
+
+	client := hello_grpc.NewHelloGRPCClient(conn)
+	req, err := client.SayHi(context.Background(), &hello_grpc.Req{Message: "Say hi from grpc client"})
+	if err != nil {
+		errChan <- err
+	}
+	return req.GetMessage()
+}
+
+func TestGRPC(t *testing.T) {
+	Convey("Test GRPC-GO", t, func() {
+		servererrChan := make(chan error)
+		clienterrChan := make(chan error)
+		l, _ := net.Listen("tcp", "127.0.0.1:0")
+		m := mini_cmux.New(l)
+		grpcl := m.Match(mini_cmux.HTTP2HeaderField("content-type", "application/grpc"))
+		go gRpcServer(servererrChan, grpcl)
+		go Serve(servererrChan, m)
+		resp := gRpcClient(clienterrChan, l.Addr().String())
+		So(resp, ShouldEqual, GrpcRESP)
+		So(cap(servererrChan), ShouldEqual, 0)
+		So(cap(clienterrChan), ShouldEqual, 0)
+	})
+}
+
+func Serve(errCh chan<- error, muxl mini_cmux.CMux) {
 	if err := muxl.Serve(); !strings.Contains(err.Error(), "use of closed") {
 		errCh <- err
 	}
