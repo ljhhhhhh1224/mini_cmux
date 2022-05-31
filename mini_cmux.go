@@ -23,7 +23,7 @@ func New(l net.Listener) CMux {
 
 // CMux is a multiplexer for network connections.
 type CMux interface {
-	Match(Matcher) net.Listener
+	Match(MatchWriter) net.Listener
 
 	Serve() error
 
@@ -43,16 +43,13 @@ type cMux struct {
 	mu     sync.Mutex
 }
 
-func (m *cMux) Match(matchers Matcher) net.Listener {
-	matcherWriter := func(w io.Writer, r io.Reader) bool {
-		return matchers(r)
-	}
+func (m *cMux) Match(matchers MatchWriter) net.Listener {
 	ml := muxListener{
 		Listener: m.root,
 		connc:    make(chan net.Conn, m.bufLen),
 		donec:    make(chan struct{}),
 	}
-	m.sls = append(m.sls, matchersListener{ss: matcherWriter, l: ml})
+	m.sls = append(m.sls, matchersListener{ss: matchers, l: ml})
 	return ml
 }
 

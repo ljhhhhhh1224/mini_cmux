@@ -3,7 +3,6 @@ package mini_cmux
 import (
 	"bufio"
 	"io"
-	"io/ioutil"
 	"net/http"
 
 	"golang.org/x/net/http2"
@@ -12,8 +11,8 @@ import (
 
 // HTTP1HeaderField 返回一个匹配 HTTP 1 连接的第一个请求的头字段的匹配器。
 
-func HTTP1HeaderField(name, value string) Matcher {
-	return func(r io.Reader) bool {
+func HTTP1HeaderField(name, value string) MatchWriter {
+	return func(w io.Writer, r io.Reader) bool {
 		req, err := http.ReadRequest(bufio.NewReader(r))
 		if err != nil {
 			return false
@@ -22,9 +21,9 @@ func HTTP1HeaderField(name, value string) Matcher {
 	}
 }
 
-func HTTP2HeaderField(name, value string) Matcher {
-	return func(r io.Reader) bool {
-		return matchHTTP2Field(ioutil.Discard, r, name, func(gotValue string) bool {
+func HTTP2HeaderField(name, value string) MatchWriter {
+	return func(w io.Writer, r io.Reader) bool {
+		return matchHTTP2Field(w, r, name, func(gotValue string) bool {
 			return gotValue == value
 		})
 	}
