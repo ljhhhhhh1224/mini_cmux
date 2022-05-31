@@ -21,6 +21,10 @@ func HTTP1HeaderField(name, value string) MatchWriter {
 	}
 }
 
+func Any() MatchWriter {
+	return func(w io.Writer, r io.Reader) bool { return true }
+}
+
 func HTTP2HeaderField(name, value string) MatchWriter {
 	return func(w io.Writer, r io.Reader) bool {
 		return matchHTTP2Field(w, r, name, func(gotValue string) bool {

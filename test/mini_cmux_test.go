@@ -3,15 +3,15 @@ package test
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"mini_cmux"
 	"mini_cmux/grpcServer"
 	hello_grpc "mini_cmux/pb"
 	"net"
 	"net/http"
-	"runtime"
-	"sort"
 	"strings"
 	"sync"
 	"testing"
@@ -151,67 +151,68 @@ func TestGRPC(t *testing.T) {
 	})
 }
 
+type muxListener struct {
+	net.Listener
+	connCh chan net.Conn
+}
+
+func (l *muxListener) Accept() (net.Conn, error) {
+	if c, ok := <-l.connCh; ok {
+		return c, nil
+	}
+	return nil, errors.New("use of closed network connection")
+}
+
+func TestBufferReader(t *testing.T) {
+	Convey("TestBufferReader", t, func() {
+		errCh := make(chan error)
+		const str = "bufferReader"
+		const times = 5
+		writer, reader := net.Pipe()
+		go func() {
+			if _, err := io.WriteString(writer, strings.Repeat(str, times)); err != nil {
+				errCh <- err
+			}
+			if err := writer.Close(); err != nil {
+				errCh <- err
+			}
+		}()
+		ml := &muxListener{
+			connCh: make(chan net.Conn, 1),
+		}
+
+		defer close(ml.connCh)
+		ml.connCh <- reader
+
+		m := mini_cmux.New(ml)
+
+		m.Match(func(w io.Writer, r io.Reader) bool {
+			var b [len(str)]byte
+			_, _ = r.Read(b[:])
+			return false
+		})
+		anyL := m.Match(mini_cmux.Any())
+		go Serve(errCh, m)
+		conn, err := anyL.Accept()
+		if err != nil {
+			errCh <- err
+		}
+
+		for i := 0; i < times; i++ {
+			var b [len(str)]byte
+			n, err := conn.Read(b[:])
+			if err != nil {
+				errCh <- err
+				continue
+			}
+			So(len(b), ShouldEqual, n)
+		}
+		So(cap(errCh), ShouldEqual, 0)
+	})
+}
+
 func Serve(errCh chan<- error, muxl mini_cmux.CMux) {
 	if err := muxl.Serve(); !strings.Contains(err.Error(), "use of closed") {
 		errCh <- err
 	}
-}
-
-func leakCheck(t testing.TB) func() {
-	orig := map[string]bool{}
-	for _, g := range interestingGoroutines() {
-		orig[g] = true
-	}
-	return func() {
-		// Loop, waiting for goroutines to shut down.
-		// Wait up to 5 seconds, but finish as quickly as possible.
-		deadline := time.Now().Add(5 * time.Second)
-		for {
-			var leaked []string
-			for _, g := range interestingGoroutines() {
-				if !orig[g] {
-					leaked = append(leaked, g)
-				}
-			}
-			if len(leaked) == 0 {
-				return
-			}
-			if time.Now().Before(deadline) {
-				time.Sleep(50 * time.Millisecond)
-				continue
-			}
-			for _, g := range leaked {
-				t.Errorf("Leaked goroutine: %v", g)
-			}
-			return
-		}
-	}
-}
-
-func interestingGoroutines() (gs []string) {
-	buf := make([]byte, 2<<20)
-	buf = buf[:runtime.Stack(buf, true)]
-	for _, g := range strings.Split(string(buf), "\n\n") {
-		sl := strings.SplitN(g, "\n", 2)
-		if len(sl) != 2 {
-			continue
-		}
-		stack := strings.TrimSpace(sl[1])
-		if strings.HasPrefix(stack, "testing.RunTests") {
-			continue
-		}
-
-		if stack == "" ||
-			strings.Contains(stack, "main.main()") ||
-			strings.Contains(stack, "testing.Main(") ||
-			strings.Contains(stack, "runtime.goexit") ||
-			strings.Contains(stack, "created by runtime.gc") ||
-			strings.Contains(stack, "interestingGoroutines") ||
-			strings.Contains(stack, "runtime.MHeap_Scavenger") {
-			continue
-		}
-		gs = append(gs, g)
-	}
-	sort.Strings(gs)
-	return
 }
