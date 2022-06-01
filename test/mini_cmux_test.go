@@ -229,20 +229,23 @@ func TestAny(t *testing.T) {
 }
 
 func TestClose(t *testing.T) {
-	errCh := make(chan error)
+	Convey("TestClose", t, func() {
+		errCh := make(chan error)
 
-	l, _ := net.Listen("tcp", "127.0.0.1:0")
+		l, _ := net.Listen("tcp", "127.0.0.1:0")
 
-	m := mini_cmux.New(l)
-	anyl := m.Match(mini_cmux.Any())
+		m := mini_cmux.New(l)
+		anyl := m.Match(mini_cmux.Any())
 
-	go Serve(errCh, m)
+		go Serve(errCh, m)
 
-	m.Close()
+		m.Close()
 
-	if _, err := anyl.Accept(); err != mini_cmux.ServerCloseErr {
-		t.Fatal(err)
-	}
+		if _, err := anyl.Accept(); err != mini_cmux.ServerCloseErr {
+			errCh <- err
+		}
+		So(cap(errCh), ShouldEqual, 0)
+	})
 }
 
 func Serve(errCh chan<- error, muxl mini_cmux.CMux) {
