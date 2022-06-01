@@ -10,6 +10,10 @@ import (
 // Matcher matches a connection based on its content.
 type Matcher func(io.Reader) bool
 
+var ServerCloseErr = errors.New("server close")
+
+var ConnError = errors.New("conn error")
+
 // MatchWriter is a match that can also write response (say to do handshake).
 type MatchWriter func(io.Writer, io.Reader) bool
 
@@ -138,11 +142,11 @@ func (l muxListener) Accept() (net.Conn, error) {
 	select {
 	case c, ok := <-l.connc:
 		if !ok {
-			return nil, errors.New("conn error")
+			return nil, ConnError
 		}
 		return c, nil
 	case <-l.donec:
-		return nil, errors.New("server close")
+		return nil, ServerCloseErr
 	}
 }
 

@@ -211,6 +211,40 @@ func TestBufferReader(t *testing.T) {
 	})
 }
 
+func TestAny(t *testing.T) {
+	Convey("Test Any", t, func() {
+		servererrChan := make(chan error)
+		clienterrChan := make(chan error)
+		l, _ := net.Listen("tcp", "127.0.0.1:0")
+		m := mini_cmux.New(l)
+		anyl := m.Match(mini_cmux.Any())
+		go HTTP1Server(servererrChan, anyl)
+		go Serve(servererrChan, m)
+		resp := HTTP1Client(clienterrChan, l.Addr())
+
+		So(cap(servererrChan), ShouldEqual, 0)
+		So(cap(clienterrChan), ShouldEqual, 0)
+		So(resp, ShouldEqual, HTTP1)
+	})
+}
+
+func TestClose(t *testing.T) {
+	errCh := make(chan error)
+
+	l, _ := net.Listen("tcp", "127.0.0.1:0")
+
+	m := mini_cmux.New(l)
+	anyl := m.Match(mini_cmux.Any())
+
+	go Serve(errCh, m)
+
+	m.Close()
+
+	if _, err := anyl.Accept(); err != mini_cmux.ServerCloseErr {
+		t.Fatal(err)
+	}
+}
+
 func Serve(errCh chan<- error, muxl mini_cmux.CMux) {
 	if err := muxl.Serve(); !strings.Contains(err.Error(), "use of closed") {
 		errCh <- err
