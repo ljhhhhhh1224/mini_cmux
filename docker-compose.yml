@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  mini_cmux:
+    container_name: mini_cmux
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+    - "23456:23456"
+    expose:
+      - "23456"
+    restart: always
