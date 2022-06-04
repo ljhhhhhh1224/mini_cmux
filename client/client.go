@@ -7,9 +7,8 @@ import (
 	hello_grpc "mini_cmux/pb"
 	"net/http"
 
-	"google.golang.org/grpc/credentials/insecure"
-
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
@@ -27,20 +26,20 @@ func main() {
 
 func httpGet() {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", "localhost:23456/get", nil)
+	req, err := http.NewRequest("GET", "http://localhost:23456/get", nil)
 	if err != nil {
 		fmt.Println(err)
 	}
 	req.Header.Add("content-type", "application/json")
 	resp, err := client.Do(req)
-	defer resp.Body.Close()
+	//defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	fmt.Println(string(body))
 }
 
 func httpStop() {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", "localhost:23456/stop", nil)
+	req, err := http.NewRequest("GET", "http://localhost:23456/stop", nil)
 	if err != nil {
 		fmt.Println(err)
 	}
