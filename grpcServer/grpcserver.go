@@ -2,11 +2,12 @@ package grpcServer
 
 import (
 	"context"
-	"mini_cmux/logging"
-	hello_grpc "mini_cmux/pb"
-	"mini_cmux/syscallOperate"
-	"mini_cmux/utils"
 	"syscall"
+
+	"github.com/ljhhhhhh1224/mini_cmux/logging"
+	hello_grpc "github.com/ljhhhhhh1224/mini_cmux/pb"
+	"github.com/ljhhhhhh1224/mini_cmux/syscallOperate"
+	"github.com/ljhhhhhh1224/mini_cmux/utils"
 )
 
 // Server 取出server

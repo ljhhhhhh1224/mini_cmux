@@ -1,15 +1,16 @@
 package main
 
 import (
-	"mini_cmux"
-	"mini_cmux/ginServer"
-	"mini_cmux/grpcServer"
-	"mini_cmux/logging"
-	hello_grpc "mini_cmux/pb"
-	"mini_cmux/syscallOperate"
 	"net"
 	"net/http"
 	"time"
+
+	"github.com/ljhhhhhh1224/mini_cmux"
+	"github.com/ljhhhhhh1224/mini_cmux/ginServer"
+	"github.com/ljhhhhhh1224/mini_cmux/grpcServer"
+	"github.com/ljhhhhhh1224/mini_cmux/logging"
+	hello_grpc "github.com/ljhhhhhh1224/mini_cmux/pb"
+	"github.com/ljhhhhhh1224/mini_cmux/syscallOperate"
 
 	"google.golang.org/grpc"
 )

@@ -2,13 +2,14 @@ package syscallOperate
 
 import (
 	"context"
-	"mini_cmux"
-	"mini_cmux/logging"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/ljhhhhhh1224/mini_cmux"
+	"github.com/ljhhhhhh1224/mini_cmux/logging"
 
 	"google.golang.org/grpc"
 )

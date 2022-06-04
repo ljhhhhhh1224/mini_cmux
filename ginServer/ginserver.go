@@ -1,10 +1,11 @@
 package ginServer
 
 import (
-	"mini_cmux/logging"
-	"mini_cmux/syscallOperate"
 	"net/http"
 	"syscall"
+
+	"github.com/ljhhhhhh1224/mini_cmux/logging"
+	"github.com/ljhhhhhh1224/mini_cmux/syscallOperate"
 
 	"github.com/gin-gonic/gin"
 )
