@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-    - "23456:23456"
+      - "23456:23456"
     expose:
       - "23456"
     restart: always
