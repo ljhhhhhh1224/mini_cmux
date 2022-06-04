@@ -22,6 +22,7 @@ func main() {
 
 	m := mini_cmux.New(l)
 
+	//匹配
 	grpcL := m.Match(mini_cmux.HTTP2HeaderField("content-type", "application/grpc"))
 	httpL := m.Match(mini_cmux.HTTP1HeaderField("content-type", "application/json"))
 
@@ -41,6 +42,6 @@ func main() {
 	go syscallOperate.CloseProcess(m, grpcS, httpS)
 
 	logging.Info("------------------------服务器启动成功------------------------")
-	err = m.Serve()
+	m.Serve()
 	time.Sleep(10 * time.Second)
 }
