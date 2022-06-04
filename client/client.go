@@ -32,8 +32,14 @@ func httpGet() {
 	}
 	req.Header.Add("content-type", "application/json")
 	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
 	//defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
 	fmt.Println(string(body))
 }
 
@@ -45,8 +51,14 @@ func httpStop() {
 	}
 	req.Header.Add("content-type", "application/json")
 	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
 	fmt.Println(string(body))
 }
 
