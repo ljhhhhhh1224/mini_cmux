@@ -8,6 +8,9 @@ metadata:
     version: 0.0.1
 spec:
   replicas: 3
+  selector:
+    matchLabels:
+      app: mini_cmux
   template:
     metadata:
       app: mini_cmux
