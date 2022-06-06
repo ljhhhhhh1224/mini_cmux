@@ -1,22 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mini_cmux
+  name: minicmux
   namespace: default
   labels:
-    app: mini_cmux
+    app: minicmux
     version: 0.0.1
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: mini_cmux
+      app: minicmux
   template:
     metadata:
-      app: mini_cmux
+      labels:
+        app: minicmux
     spec:
       containers:
-        - name: mini_cmuxc
+        - name: minicmux
           image: registry.gitlab.com/ljhhhhhh1224/mini_cmux:latest
           ports:
             - containerPort: 23456
