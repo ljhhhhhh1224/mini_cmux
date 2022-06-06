@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minicmux
+spec:
+  selector:
+    app: minicmux
+  type: NodePort
+  ports:
+    - port: 23456
+      targetPort: 23456
+      nodePort: 31958
