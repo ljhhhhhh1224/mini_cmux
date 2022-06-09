@@ -2,6 +2,48 @@
 ***
 mini_cmux支持在启动后只监听一个端口的情况下同时接受http访问和grpc访问
 
+`项目结构`
+```
+├── buffer.go
+├── client
+│   └── client.go
+├── deployment.yaml
+├── docker-compose.yml
+├── Dockerfile
+├── example
+│   └── example.go
+├── ginServer
+│   ├── ginserver.go
+│   └── ginserver_test.go
+├── go.mod
+├── go.sum
+├── grpcServer
+│   ├── gprcserver_test.go
+│   └── grpcserver.go
+├── logging
+│   ├── file.go
+│   └── log.go
+├── Makefile
+├── matchers.go
+├── mini_cmux.go
+├── pb
+│   ├── build.sh
+│   ├── hello_grpc_grpc.pb.go
+│   ├── hello_grpc.pb.go
+│   └── hello_grpc.proto
+├── README.md
+├── service.yaml
+├── syscallOperate
+│   ├── syscallOperate.go
+│   └── syscallOperate_test.go
+├── test
+│   └── mini_cmux_test.go
+└── utils
+    ├── utils.go
+    └── utils_test.go
+```
+
+
 ## 使用方式
 
 ```golang
