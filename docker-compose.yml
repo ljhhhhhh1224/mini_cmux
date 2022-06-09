@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   mini_cmux:
-    container_name: mini_cmux
+    container_name: demo
     build:
       context: .
       dockerfile: Dockerfile
