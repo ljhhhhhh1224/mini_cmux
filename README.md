@@ -102,7 +102,22 @@ spec:
 
 通过以上的`deployment.yaml`和`service.yaml`,我们通过`kubectl`执行  
 ```shell
-kubectl create -f deployment.yaml
-kubectl apply -f service.yaml
+$ kubectl create -f deployment.yaml
+$ kubectl apply -f service.yaml
 ```
 
+分别查看deployment、service、pod的详情
+```shell
+$ kubectl get pods
+$ kubectl get deploy
+$ kubectl get service
+```
+
+获得服务的`url`
+```shell
+$ minikube service --url minicmux
+```
+
+后续可以在本机上通过客户端发送请求到该`url`访问到服务
+
+## 实现原理
