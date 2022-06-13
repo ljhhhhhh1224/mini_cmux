@@ -7,7 +7,6 @@ import (
 	"sync"
 )
 
-// Matcher matches a connection based on its content.
 type Matcher func(io.Reader) bool
 
 var ServerCloseErr = errors.New("server close")
@@ -17,6 +16,7 @@ var ConnError = errors.New("conn error")
 // MatchWriter is a match that can also write response (say to do handshake).
 type MatchWriter func(io.Writer, io.Reader) bool
 
+// New 根据传入的net.listener实例化一个多路复用器
 func New(l net.Listener) CMux {
 	return &cMux{
 		root:   l,
@@ -25,12 +25,13 @@ func New(l net.Listener) CMux {
 	}
 }
 
-// CMux is a multiplexer for network connections.
+// CMux 是一个网络连接的多路复用器
 type CMux interface {
+	// Match 对匹配器进行匹配
 	Match(MatchWriter) net.Listener
-
+	// Serve 启动多路复用器
 	Serve() error
-
+	// Close 关闭多路复用器
 	Close()
 }
 
@@ -41,18 +42,21 @@ type matchersListener struct {
 
 type cMux struct {
 	root   net.Listener
-	bufLen int
-	sls    []matchersListener
-	donec  chan struct{}
+	bufLen int                // 匹配器中缓存连接的队列长度
+	sls    []matchersListener // 注册的匹配器列表
+	donec  chan struct{}      // 多路复用器关闭channel
 	mu     sync.Mutex
 }
 
+// Match 对传入的 MatchWriter 进行包装成 muxListener，muxListener实现了 net.Listener 接口
+// 用于返回给与匹配器对应的服务端进行连接的获取、处理和关闭等操作
 func (m *cMux) Match(matchers MatchWriter) net.Listener {
 	ml := muxListener{
 		Listener: m.root,
 		connc:    make(chan net.Conn, m.bufLen),
 		donec:    make(chan struct{}),
 	}
+	//将该muxListener添加到CMux匹配器列表中
 	m.sls = append(m.sls, matchersListener{ss: matchers, l: ml})
 	return ml
 }

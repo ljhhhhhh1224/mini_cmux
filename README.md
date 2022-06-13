@@ -163,4 +163,6 @@ $ minikube service --url minicmux
 后续可以在本机上通过客户端发送请求到该`url`访问到服务
 
 ## 实现原理
-mini_cmux通过
+`mini_cmux`通过 `matchers(匹配器)`对`HTTP header fields`中的键值对将请求按照规则分配到不同的服务当中  
+  
+mini_cmux的核心为 mini_cmux(多路复用器) 以及 matchers(匹配器)的实现
