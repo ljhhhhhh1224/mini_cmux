@@ -4,41 +4,41 @@ mini_cmux支持在启动后只监听一个端口的情况下同时接受http访�
 
 `项目结构`
 ```
-├── buffer.go
+├── buffer.go                       # mini_cmux buffer组件
 ├── client
-│   └── client.go
-├── deployment.yaml
-├── docker-compose.yml
-├── Dockerfile
-├── example
-│   └── example.go
-├── ginServer
+│   └── client.go                   # 客户端访问
+├── deployment.yaml                 # k8s 创建deployment
+├── docker-compose.yml              # docker-compose的yml文件
+├── Dockerfile                      # dockerfile
+├── example                         
+│   └── example.go                  # 服务端启动入口
+├── ginServer                       # http服务
 │   ├── ginserver.go
 │   └── ginserver_test.go
 ├── go.mod
-├── go.sum
-├── grpcServer
+├── go.sum              
+├── grpcServer                      # gprc服务
 │   ├── gprcserver_test.go
 │   └── grpcserver.go
-├── logging
+├── logging                         # 日志组件
 │   ├── file.go
 │   └── log.go
-├── Makefile
-├── matchers.go
-├── mini_cmux.go
+├── Makefile                        # Makefile
+├── matchers.go                     # mini_cmux matchers组件
+├── mini_cmux.go                    # mini_cmux 核心组件
 ├── pb
 │   ├── build.sh
 │   ├── hello_grpc_grpc.pb.go
 │   ├── hello_grpc.pb.go
 │   └── hello_grpc.proto
 ├── README.md
-├── service.yaml
-├── syscallOperate
+├── service.yaml                    # k8s 创建service
+├── syscallOperate                  # 接收系统信号
 │   ├── syscallOperate.go
 │   └── syscallOperate_test.go
-├── test
+├── test                            # mini_cmux test
 │   └── mini_cmux_test.go
-└── utils
+└── utils                           # 工具方法
     ├── utils.go
     └── utils_test.go
 ```
