@@ -142,7 +142,7 @@ spec:
       nodePort: 31958
 ```
 
-通过以上的`deployment.yaml`和`service.yaml`,我们通过`kubectl`执行  
+以上的`deployment.yaml`和`service.yaml`,我们通过`kubectl`执行  
 ```shell
 $ kubectl create -f deployment.yaml
 $ kubectl apply -f service.yaml
