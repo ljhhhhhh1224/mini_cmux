@@ -10,7 +10,6 @@ import (
 )
 
 // HTTP1HeaderField 返回一个匹配 HTTP 1 连接的第一个请求的头字段的匹配器。
-
 func HTTP1HeaderField(name, value string) MatchWriter {
 	return func(w io.Writer, r io.Reader) bool {
 		req, err := http.ReadRequest(bufio.NewReader(r))
@@ -21,10 +20,12 @@ func HTTP1HeaderField(name, value string) MatchWriter {
 	}
 }
 
+// Any 匹配任意请求的匹配器
 func Any() MatchWriter {
 	return func(w io.Writer, r io.Reader) bool { return true }
 }
 
+// HTTP2HeaderField 返回一个匹配 HTTP2 连接的第一个请求的头字段的匹配器。
 func HTTP2HeaderField(name, value string) MatchWriter {
 	return func(w io.Writer, r io.Reader) bool {
 		return matchHTTP2Field(w, r, name, func(gotValue string) bool {
