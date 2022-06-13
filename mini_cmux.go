@@ -70,7 +70,7 @@ func (m *cMux) Serve() error {
 
 		for _, sl := range m.sls {
 			close(sl.l.connc)
-			// Drain the connections enqueued for the listener.
+			// 关闭各匹配器对应的连接队列
 			for c := range sl.l.connc {
 				_ = c.Close()
 			}
@@ -154,7 +154,7 @@ func (l muxListener) Accept() (net.Conn, error) {
 	}
 }
 
-// MuxConn wraps a net.Conn and provides transparent sniffing of connection data.
+// MuxConn 将 net.Conn 包装为 MuxConn 并提供对连接数据的透明嗅探
 type MuxConn struct {
 	net.Conn
 	buf bufferedReader
