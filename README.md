@@ -81,10 +81,10 @@ docker安装步骤见官网 https://docs.docker.com/get-started/
 docker-compose 安装步骤见官网 https://docs.docker.com/compose/install/
 
 ```
-cd $GOPATH/src
-git clone https://github.com/ljhhhhhh1224/mini_cmux.git
-cd mini_cmux
-docker-compose up
+$ cd $GOPATH/src
+$ git clone https://github.com/ljhhhhhh1224/mini_cmux.git
+$ cd mini_cmux
+$ docker-compose up
 ```
 
 部署成功后即可使用客户端对服务进行访问
@@ -163,3 +163,4 @@ $ minikube service --url minicmux
 后续可以在本机上通过客户端发送请求到该`url`访问到服务
 
 ## 实现原理
+mini_cmux通过
