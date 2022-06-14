@@ -171,11 +171,13 @@ func (m *MuxConn) Read(p []byte) (int, error) {
 	return m.buf.Read(p)
 }
 
+// 开始嗅探
 func (m *MuxConn) startSniffing() io.Reader {
 	m.buf.reset(true)
 	return &m.buf
 }
 
+// 结束嗅探
 func (m *MuxConn) doneSniffing() {
 	m.buf.reset(false)
 }
