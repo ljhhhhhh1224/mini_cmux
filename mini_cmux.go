@@ -109,7 +109,6 @@ func (m *cMux) serve(c net.Conn, donec <-chan struct{}, wg *sync.WaitGroup) {
 		}
 	}
 	c.Close()
-
 }
 
 func (m *cMux) Close() {

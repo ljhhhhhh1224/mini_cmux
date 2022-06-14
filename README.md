@@ -161,8 +161,65 @@ $ minikube service --url minicmux
 ```
 
 后续可以在本机上通过客户端发送请求到该`url`访问到服务
-
+***
 ## 实现原理
 `mini_cmux`通过 `matchers(匹配器)`对`HTTP header fields`中的键值对将请求按照规则分配到不同的服务当中  
   
-mini_cmux的核心为 mini_cmux(多路复用器) 以及 matchers(匹配器)的实现
+`mini_cmux`的核心为 `mini_cmux(多路复用器)` 及 `matchers(匹配器)`的实现
+
+框架中最核心的为继承了`CMux`接口的`cMux`结构体
+```go
+type cMux struct {
+	root   net.Listener
+	bufLen int                // 匹配器中缓存连接的队列长度
+	sls    []matchersListener // 注册的匹配器列表
+	donec  chan struct{}      // 通知多路复用器关闭的channel
+	mu     sync.Mutex
+}
+```
+
+此多路复用器的实现方式是通过接受一个连接，然后通过遍历多路复用器中的匹配器列表，找到对应的处理服务,然后将请求给对应的服务进行处理  
+
+以下是具体实现
+```go
+func (m *cMux) serve(c net.Conn, donec <-chan struct{}, wg *sync.WaitGroup) {
+	defer wg.Done()
+	// 将 net.Conn 包装为 MuxConn
+	muc := newMuxConn(c)
+
+	// 遍历已注册的匹配器列表
+	for _, sl := range m.sls {
+		matched := sl.ss(muc.Conn, muc.startSniffing())
+		if matched {
+			muc.doneSniffing()
+			select {
+			// 将匹配成功的连接放入匹配器的缓存队列中，结束
+			case sl.l.connc <- muc: 
+				// 如果多路复用器标识为终止，则关闭连接，结束
+			case <-donec:
+				_ = c.Close()
+			}
+			return
+		}
+	}
+	c.Close()
+}
+```
+  
+
+完成以上的流程前提是将各类型的匹配器注册到cMux的匹配器列表中,cMux提供了`Match`方法进行匹配器的注册
+
+```go
+// Match 对传入的 MatchWriter 进行包装成 muxListener，muxListener实现了 net.Listener 接口
+// 用于返回给与匹配器对应的服务端进行连接的获取、处理和关闭等操作
+func (m *cMux) Match(matchers MatchWriter) net.Listener {
+	ml := muxListener{
+		Listener: m.root,
+		connc:    make(chan net.Conn, m.bufLen),
+		donec:    make(chan struct{}),
+	}
+	//将该muxListener添加到CMux匹配器列表中
+	m.sls = append(m.sls, matchersListener{ss: matchers, l: ml})
+	return ml
+}
+```
