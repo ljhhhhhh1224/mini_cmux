@@ -167,6 +167,45 @@ $ minikube service --url minicmux
   
 `mini_cmux`的核心为 `mini_cmux(多路复用器)` 及 `matchers(匹配器)`的实现
 
+首先我们从`matchers`开始讲起,mini_cmux通过区分`HTTP header fields`中的键值对,mini_cmux提供了`HTTP1`、`GRPC`和`Any`三种匹配规则
+```go
+// HTTP1HeaderField 返回一个匹配 HTTP 1 连接的第一个请求的头字段的匹配器。
+func HTTP1HeaderField(name, value string) MatchWriter {
+	return func(w io.Writer, r io.Reader) bool {
+		req, err := http.ReadRequest(bufio.NewReader(r))
+		if err != nil {
+			return false
+		}
+		return req.Header.Get(name) == value
+	}
+}
+```
+
+调用`matchers`中的匹配规则方法会返回一个`MatchWriter`(func(io.Writer, io.Reader) bool),对于此`matchWriter`,cMux提供了`Match`方法将MatchWriter注册到cMux的匹配器列表中
+
+```go
+// Match 对传入的 MatchWriter 进行包装成 muxListener，muxListener实现了 net.Listener 接口
+// muxListener用一个 conn channel 和 done channel 来让与匹配器匹配成功的服务端进行连接的获取、处理和关闭等操作
+func (m *cMux) Match(matchers MatchWriter) net.Listener {
+	ml := muxListener{
+		Listener: m.root,
+		connc:    make(chan net.Conn, m.bufLen),
+		donec:    make(chan struct{}),
+	}
+	//将该muxListener添加到CMux匹配器列表中
+	m.sls = append(m.sls, matchersListener{ss: matchers, l: ml})
+	return ml
+}
+```
+`muxListener`
+```go
+type muxListener struct {
+	net.Listener
+	connc chan net.Conn
+	donec chan struct{}
+}
+
+```
 框架中最核心的为继承了`CMux`接口的`cMux`结构体
 ```go
 type cMux struct {
@@ -207,19 +246,5 @@ func (m *cMux) serve(c net.Conn, donec <-chan struct{}, wg *sync.WaitGroup) {
 ```
   
 
-完成以上的流程前提是将各类型的匹配器注册到cMux的匹配器列表中,cMux提供了`Match`方法进行匹配器的注册
 
-```go
-// Match 对传入的 MatchWriter 进行包装成 muxListener，muxListener实现了 net.Listener 接口
-// 用于返回给与匹配器对应的服务端进行连接的获取、处理和关闭等操作
-func (m *cMux) Match(matchers MatchWriter) net.Listener {
-	ml := muxListener{
-		Listener: m.root,
-		connc:    make(chan net.Conn, m.bufLen),
-		donec:    make(chan struct{}),
-	}
-	//将该muxListener添加到CMux匹配器列表中
-	m.sls = append(m.sls, matchersListener{ss: matchers, l: ml})
-	return ml
-}
-```
+
