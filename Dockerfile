@@ -5,6 +5,6 @@ ENV GO111MODULE=on
 ENV GOPROXY=https://goproxy.cn,direct
 
 COPY . /$GOPATH/src/mini_cmux/
-WORKDIR /$GOPATH/src/mini_cmux/example
+WORKDIR /$GOPATH/src/mini_cmux/server
 RUN go build
-CMD ["./example"]
+CMD ["./server"]
