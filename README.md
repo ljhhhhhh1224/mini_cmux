@@ -167,6 +167,19 @@ $ minikube service --url minicmux
   
 `mini_cmux`的核心为 `mini_cmux(多路复用器)` 及 `matchers(匹配器)`的实现
 
+框架中最核心的为继承了`CMux`接口的`cMux`结构体
+```go
+type cMux struct {
+	root   net.Listener
+	bufLen int                // 匹配器中缓存连接的队列长度
+	sls    []matchersListener // 注册的匹配器列表
+	donec  chan struct{}      // 通知多路复用器关闭的channel
+	mu     sync.Mutex
+}
+```
+
+此多路复用器的实现方式是通过接受一个连接，然后通过遍历多路复用器中的匹配器列表，找到对应的处理服务,然后将请求给对应的服务进行处理
+
 首先我们从`matchers`开始讲起,mini_cmux通过区分`HTTP header fields`中的键值对,mini_cmux提供了`HTTP1`、`GRPC`和`Any`三种匹配规则
 ```go
 // HTTP1HeaderField 返回一个匹配 HTTP 1 连接的第一个请求的头字段的匹配器。
@@ -204,20 +217,11 @@ type muxListener struct {
 	connc chan net.Conn
 	donec chan struct{}
 }
-
-```
-框架中最核心的为继承了`CMux`接口的`cMux`结构体
-```go
-type cMux struct {
-	root   net.Listener
-	bufLen int                // 匹配器中缓存连接的队列长度
-	sls    []matchersListener // 注册的匹配器列表
-	donec  chan struct{}      // 通知多路复用器关闭的channel
-	mu     sync.Mutex
-}
 ```
 
-此多路复用器的实现方式是通过接受一个连接，然后通过遍历多路复用器中的匹配器列表，找到对应的处理服务,然后将请求给对应的服务进行处理  
+
+
+
 
 以下是具体实现
 ```go
