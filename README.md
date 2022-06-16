@@ -10,8 +10,8 @@ mini_cmux支持在启动后只监听一个端口的情况下同时接受http访�
 ├── deployment.yaml                 # k8s 创建deployment
 ├── docker-compose.yml              # docker-compose的yml文件
 ├── Dockerfile                      # dockerfile
-├── example                         
-│   └── example.go                  # 服务端启动入口
+├── server                         
+│   └── server.go                   # 服务端启动入口
 ├── ginServer                       # http服务
 │   ├── ginserver.go
 │   └── ginserver_test.go
@@ -26,14 +26,14 @@ mini_cmux支持在启动后只监听一个端口的情况下同时接受http访�
 ├── Makefile                        # Makefile
 ├── matchers.go                     # mini_cmux matchers组件
 ├── mini_cmux.go                    # mini_cmux 核心组件
-├── pb
+├── pb                              # protocol
 │   ├── build.sh
 │   ├── hello_grpc_grpc.pb.go
 │   ├── hello_grpc.pb.go
 │   └── hello_grpc.proto
 ├── README.md
 ├── service.yaml                    # k8s 创建service
-├── syscallOperate                  # 接收系统信号
+├── syscallOperate                  # 接收系统关闭信号
 │   ├── syscallOperate.go
 │   └── syscallOperate_test.go
 ├── test                            # mini_cmux test

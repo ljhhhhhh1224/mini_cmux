@@ -21,9 +21,9 @@ func main() {
 	defer conn.Close()
 	client := hello_grpc.NewHelloGRPCClient(conn)
 	grpcSayHi(client)
-	grpcRequestStop(client)
+	//grpcRequestStop(client)
 	httpGet()
-	httpStop()
+	//httpStop()
 }
 
 func httpGet() {

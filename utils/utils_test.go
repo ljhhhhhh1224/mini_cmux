@@ -1,8 +1,8 @@
 package utils
 
 type addr struct {
-	network string // name of the network (for example, "tcp", "udp")
-	str     string // string form of address (for example, "192.0.2.1:25", "[2001:db8::1]:80")
+	network string // name of the network (for server, "tcp", "udp")
+	str     string // string form of address (for server, "192.0.2.1:25", "[2001:db8::1]:80")
 }
 
 func (a addr) Network() string {
