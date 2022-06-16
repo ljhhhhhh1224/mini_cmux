@@ -178,7 +178,7 @@ type cMux struct {
 }
 ```
 
-此多路复用器的实现方式是通过接受一个连接，然后通过遍历多路复用器中的匹配器列表，找到对应的处理服务,然后将请求给对应的服务进行处理
+此多路复用器的实现方式是通过接受一个连接，然后通过遍历多路复用器中的匹配器列表，找到对应的服务,然后将请求交给对应的服务进行处理
 
 首先我们从`matchers`开始讲起,mini_cmux通过区分`HTTP header fields`中的键值对,mini_cmux提供了`HTTP1`、`GRPC`和`Any`三种匹配规则
 ```go
@@ -197,34 +197,75 @@ func HTTP1HeaderField(name, value string) MatchWriter {
 调用`matchers`中的匹配规则方法会返回一个`MatchWriter`(func(io.Writer, io.Reader) bool),对于此`matchWriter`,cMux提供了`Match`方法将MatchWriter注册到cMux的匹配器列表中
 
 ```go
-// Match 对传入的 MatchWriter 进行包装成 muxListener，muxListener实现了 net.Listener 接口
+// Match 对传入的 MatchWriter 进行包装成 muxListener并作为函数的返回值，muxListener实现了 net.Listener 接口
 // muxListener用一个 conn channel 和 done channel 来让与匹配器匹配成功的服务端进行连接的获取、处理和关闭等操作
+// 此方法返回的 listener 可被用于各服务的监听
 func (m *cMux) Match(matchers MatchWriter) net.Listener {
 	ml := muxListener{
 		Listener: m.root,
 		connc:    make(chan net.Conn, m.bufLen),
 		donec:    make(chan struct{}),
 	}
-	//将该muxListener添加到CMux匹配器列表中
+	//将该muxListener 与 matcherWriter 封装成 matcherListener 添加到CMux匹配器列表中
 	m.sls = append(m.sls, matchersListener{ss: matchers, l: ml})
 	return ml
 }
 ```
-`muxListener`
+`muxListener`结构
 ```go
 type muxListener struct {
 	net.Listener
 	connc chan net.Conn
 	donec chan struct{}
 }
+
+// muxListener还重写了Accept()方法让各服务接收conn
+func (l muxListener) Accept() (net.Conn, error) {
+	select {
+	case c, ok := <-l.connc:
+		if !ok {
+			return nil, ConnError
+		}
+		return c, nil
+	case <-l.donec:
+		return nil, ServerCloseErr
+	}
+}
 ```
 
-
+当我们完成上述将`matchersListener`匹配器注册到cMux匹配器列表中的操作后，我们的cMux就可以开始正式工作了
 
 
 
 以下是具体实现
 ```go
+func (m *cMux) Serve() error {
+	var wg sync.WaitGroup
+
+	defer func() {
+		m.closeDoneChans()
+		wg.Wait()
+
+		for _, sl := range m.sls {
+			close(sl.l.connc)
+			// 关闭各匹配器对应的连接队列
+			for c := range sl.l.connc {
+				_ = c.Close()
+			}
+		}
+	}()
+
+	for {
+		c, err := m.root.Accept()
+		if err != nil {
+			return err
+		}
+
+		wg.Add(1)
+		go m.serve(c, m.donec, &wg)
+	}
+}
+
 func (m *cMux) serve(c net.Conn, donec <-chan struct{}, wg *sync.WaitGroup) {
 	defer wg.Done()
 	// 将 net.Conn 包装为 MuxConn
