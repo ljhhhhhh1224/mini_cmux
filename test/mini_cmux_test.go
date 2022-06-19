@@ -14,7 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ljhhhhhh1224/mini_cmux"
+	mini_cmux2 "github.com/ljhhhhhh1224/mini_cmux/mini_cmux"
+
 	"github.com/ljhhhhhh1224/mini_cmux/grpcServer"
 	hello_grpc "github.com/ljhhhhhh1224/mini_cmux/pb"
 
@@ -100,8 +101,8 @@ func TestHTTP1(t *testing.T) {
 		servererrChan := make(chan error)
 		clienterrChan := make(chan error)
 		l, _ := net.Listen("tcp", "127.0.0.1:0")
-		m := mini_cmux.New(l)
-		httpl := m.Match(mini_cmux.HTTP1HeaderField("content-type", "application/json"))
+		m := mini_cmux2.New(l)
+		httpl := m.Match(mini_cmux2.HTTP1HeaderField("content-type", "application/json"))
 		go HTTP1Server(servererrChan, httpl)
 		go Serve(servererrChan, m)
 		resp := HTTP1Client(clienterrChan, l.Addr())
@@ -141,8 +142,8 @@ func TestGRPC(t *testing.T) {
 		servererrChan := make(chan error)
 		clienterrChan := make(chan error)
 		l, _ := net.Listen("tcp", "127.0.0.1:0")
-		m := mini_cmux.New(l)
-		grpcl := m.Match(mini_cmux.HTTP2HeaderField("content-type", "application/grpc"))
+		m := mini_cmux2.New(l)
+		grpcl := m.Match(mini_cmux2.HTTP2HeaderField("content-type", "application/grpc"))
 		go gRpcServer(servererrChan, grpcl)
 		go Serve(servererrChan, m)
 		resp := gRpcClient(clienterrChan, l.Addr().String())
@@ -185,14 +186,14 @@ func TestBufferReader(t *testing.T) {
 		defer close(ml.connCh)
 		ml.connCh <- reader
 
-		m := mini_cmux.New(ml)
+		m := mini_cmux2.New(ml)
 
 		m.Match(func(w io.Writer, r io.Reader) bool {
 			var b [len(str)]byte
 			_, _ = r.Read(b[:])
 			return false
 		})
-		anyL := m.Match(mini_cmux.Any())
+		anyL := m.Match(mini_cmux2.Any())
 		go Serve(errCh, m)
 		conn, err := anyL.Accept()
 		if err != nil {
@@ -217,8 +218,8 @@ func TestAny(t *testing.T) {
 		servererrChan := make(chan error)
 		clienterrChan := make(chan error)
 		l, _ := net.Listen("tcp", "127.0.0.1:0")
-		m := mini_cmux.New(l)
-		anyl := m.Match(mini_cmux.Any())
+		m := mini_cmux2.New(l)
+		anyl := m.Match(mini_cmux2.Any())
 		go HTTP1Server(servererrChan, anyl)
 		go Serve(servererrChan, m)
 		resp := HTTP1Client(clienterrChan, l.Addr())
@@ -235,21 +236,21 @@ func TestClose(t *testing.T) {
 
 		l, _ := net.Listen("tcp", "127.0.0.1:0")
 
-		m := mini_cmux.New(l)
-		anyl := m.Match(mini_cmux.Any())
+		m := mini_cmux2.New(l)
+		anyl := m.Match(mini_cmux2.Any())
 
 		go Serve(errCh, m)
 
 		m.Close()
 
-		if _, err := anyl.Accept(); err != mini_cmux.ServerCloseErr {
+		if _, err := anyl.Accept(); err != mini_cmux2.ServerCloseErr {
 			errCh <- err
 		}
 		So(cap(errCh), ShouldEqual, 0)
 	})
 }
 
-func Serve(errCh chan<- error, muxl mini_cmux.CMux) {
+func Serve(errCh chan<- error, muxl mini_cmux2.CMux) {
 	if err := muxl.Serve(); !strings.Contains(err.Error(), "use of closed") {
 		errCh <- err
 	}

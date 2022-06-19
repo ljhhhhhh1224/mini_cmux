@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ljhhhhhh1224/mini_cmux"
+	mini_cmux2 "github.com/ljhhhhhh1224/mini_cmux/mini_cmux"
+
 	"github.com/ljhhhhhh1224/mini_cmux/ginServer"
 	"github.com/ljhhhhhh1224/mini_cmux/grpcServer"
 	"github.com/ljhhhhhh1224/mini_cmux/logging"
@@ -21,11 +22,11 @@ func main() {
 		logging.Error(err)
 	}
 
-	m := mini_cmux.New(l)
+	m := mini_cmux2.New(l)
 
 	//匹配
-	grpcL := m.Match(mini_cmux.HTTP2HeaderField("content-type", "application/grpc"))
-	httpL := m.Match(mini_cmux.HTTP1HeaderField("content-type", "application/json"))
+	grpcL := m.Match(mini_cmux2.HTTP2HeaderField("content-type", "application/grpc"))
+	httpL := m.Match(mini_cmux2.HTTP1HeaderField("content-type", "application/json"))
 
 	//grpc
 	grpcS := grpc.NewServer()

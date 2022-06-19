@@ -8,7 +8,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ljhhhhhh1224/mini_cmux"
+	mini_cmux2 "github.com/ljhhhhhh1224/mini_cmux/mini_cmux"
+
 	"github.com/ljhhhhhh1224/mini_cmux/logging"
 
 	"google.golang.org/grpc"
@@ -20,7 +21,7 @@ func GetSyscallChan() chan os.Signal {
 	return c
 }
 
-func CloseProcess(m mini_cmux.CMux, g *grpc.Server, s *http.Server) {
+func CloseProcess(m mini_cmux2.CMux, g *grpc.Server, s *http.Server) {
 	<-c
 	logging.Info("------------------------开始平滑关闭服务器------------------------")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
