@@ -3,8 +3,8 @@ services:
   mini_cmux:
     container_name: demo
     build:
-      context: ..
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: resource/Dockerfile
     ports:
       - "23456:23456"
     expose:
