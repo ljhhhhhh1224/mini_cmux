@@ -4,7 +4,7 @@ services:
     container_name: demo
     build:
       context: ..
-      dockerfile: ../resource/Dockerfile
+      dockerfile: ./Dockerfile
     ports:
       - "23456:23456"
     expose:
