@@ -6,5 +6,5 @@ ENV GOPROXY=https://goproxy.cn,direct
 
 COPY . /$GOPATH/src/mini_cmux/
 WORKDIR /$GOPATH/src/mini_cmux/
-RUN go build
+RUN go build server.go
 CMD ["./server"]
