@@ -6,7 +6,7 @@ mini_cmux支持在启动后只监听一个端口的情况下同时接受http访�
 ```
 ├── buffer.go                       # mini_cmux buffer组件
 ├── client
-│   └── client.go                   # 客户端访问
+│   └── client.go                   
 ├── deployment.yaml                 # k8s 创建deployment
 ├── docker-compose.yml              # docker-compose的yml文件
 ├── Dockerfile                      # dockerfile
@@ -17,27 +17,66 @@ mini_cmux支持在启动后只监听一个端口的情况下同时接受http访�
 │   └── ginserver_test.go
 ├── go.mod
 ├── go.sum              
-├── grpcServer                      # gprc服务
+├── grpcServer                     
 │   ├── gprcserver_test.go
 │   └── grpcserver.go
-├── logging                         # 日志组件
+├── logging                         
 │   ├── file.go
 │   └── log.go
 ├── Makefile                        # Makefile
 ├── matchers.go                     # mini_cmux matchers组件
-├── mini_cmux.go                    # mini_cmux 核心组件
-├── pb                              # protocol
+├── mini_cmux.go                    
+├── pb                              
 │   ├── build.sh
 │   ├── hello_grpc_grpc.pb.go
 │   ├── hello_grpc.pb.go
 │   └── hello_grpc.proto
 ├── README.md
 ├── service.yaml                    # k8s 创建service
-├── syscallOperate                  # 接收系统关闭信号
+├── syscallOperate                  
 │   ├── syscallOperate.go
 │   └── syscallOperate_test.go
 ├── test                            # mini_cmux test
 │   └── mini_cmux_test.go
+└── utils                           # 工具方法
+    ├── utils.go
+    └── utils_test.go
+    
+├── client
+│   └── client.go                   # 客户端访问入口
+├── ginServer                       # http服务
+│   ├── ginserver.go
+│   └── ginserver_test.go
+├── go.mod
+├── go.sum
+├── grpcServer                      # gprc服务
+│   ├── gprcserver_test.go
+│   └── grpcserver.go
+├── logging                         # 日志组件
+│   ├── file.go
+│   └── log.go
+├── mini_cmux                       # mini_cmux 核心组件
+│   ├── buffer.go
+│   ├── matchers.go
+│   └── mini_cmux.go
+├── pb                              # protocol
+│   ├── build.sh
+│   ├── hello_grpc_grpc.pb.go
+│   ├── hello_grpc.pb.go
+│   └── hello_grpc.proto
+├── README.md
+├── resource                        # 资源文件
+│   ├── deployment.yaml
+│   ├── docker-compose.yml
+│   ├── Dockerfile
+│   ├── Makefile
+│   └── service.yaml
+├── server.go                       # 服务端启动入口
+├── syscallOperate                  # 监听系统关闭信号组件
+│   ├── syscallOperate.go
+│   └── syscallOperate_test.go
+├── test                            # mini_cmux单元测试
+│   └── mini_cmux_test.go
 └── utils                           # 工具方法
     ├── utils.go
     └── utils_test.go
@@ -83,7 +122,7 @@ docker-compose 安装步骤见官网 https://docs.docker.com/compose/install/
 ```
 $ cd $GOPATH/src
 $ git clone https://github.com/ljhhhhhh1224/mini_cmux.git
-$ cd mini_cmux
+$ cd mini_cmux/resource
 $ docker-compose up
 ```
 
