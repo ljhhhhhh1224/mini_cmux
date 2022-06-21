@@ -3,10 +3,22 @@ package utils
 import (
 	"fmt"
 	"net"
+	"path/filepath"
 	"strings"
+	"sync"
+
+	"github.com/BurntSushi/toml"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/peer"
+)
+
+type config struct {
+}
+
+var (
+	cfg  *config
+	once sync.Once
 )
 
 // GetGrpcClientIP 获得grpc客户端的ip方法
@@ -20,4 +32,18 @@ func GetGrpcClientIP(ctx context.Context) (string, error) {
 	}
 	addSlice := strings.Split(pr.Addr.String(), ":")
 	return addSlice[0], nil
+}
+
+func Config() *config {
+	once.Do(func() {
+		filePath, err := filepath.Abs("./ch3/config.toml")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("parse toml file once. filePath: %s\n", filePath)
+		if _, err := toml.DecodeFile(filePath, &cfg); err != nil {
+			panic(err)
+		}
+	})
+	return cfg
 }
