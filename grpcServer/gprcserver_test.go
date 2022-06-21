@@ -45,7 +45,7 @@ func TestServer_RequestStop(t *testing.T) {
 		defer conn.Close()
 		client := hello_grpc.NewHelloGRPCClient(conn)
 		resp, err := client.RequestStop(ctx, &hello_grpc.Req{Message: "Request Stop from client(UT)"})
-		So(resp.GetMessage(), ShouldEqual, "开始关闭服务器")
+		So(resp.GetMessage(), ShouldEqual, "Start shutting down the server")
 		So(err, ShouldBeNil)
 	})
 }
@@ -60,7 +60,7 @@ func TestServer_SayHi(t *testing.T) {
 		defer conn.Close()
 		client := hello_grpc.NewHelloGRPCClient(conn)
 		resp, err := client.SayHi(ctx, &hello_grpc.Req{Message: "SayHi from client(UT)"})
-		So(resp.GetMessage(), ShouldEqual, "(GRPC)服务端响应SayHi请求")
+		So(resp.GetMessage(), ShouldEqual, "(GRPC)The server responds to the SayHi request")
 		So(err, ShouldBeNil)
 	})
 }

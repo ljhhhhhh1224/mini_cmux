@@ -29,7 +29,7 @@ type HTTP1Handler struct{}
 
 const (
 	HTTP1    = "HTTP1"
-	GrpcRESP = "(GRPC)服务端响应SayHi请求"
+	GrpcRESP = "(GRPC)The server responds to the SayHi request"
 )
 
 func (*HTTP1Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

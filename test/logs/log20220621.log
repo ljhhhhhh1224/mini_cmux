@@ -1,0 +1,3 @@
+[INFO][grpcserver.go:24]2022/06/21 16:31:32 Receive Grpc SayHi request :  Say hi from grpc client  from  127.0.0.1
+[INFO][grpcserver.go:24]2022/06/21 16:34:09 Receive Grpc SayHi request :  Say hi from grpc client  from  127.0.0.1
+[INFO][grpcserver.go:24]2022/06/21 16:36:10 Receive Grpc SayHi request :  Say hi from grpc client  from  127.0.0.1
