@@ -14,16 +14,16 @@ import (
 )
 
 type config struct {
-	Debug  bool `toml:"debug"`
+	Debug  bool
 	Server struct {
-		IP      string `toml:"IP"`
-		Port    string `toml:"Port"'`
-		Network string `toml:"Network"`
+		IP      string
+		Port    string
+		Network string
 	}
 	Client struct {
-		IP      string `toml:"IP"`
-		Port    string `toml:"Port"'`
-		Network string `toml:"Network"`
+		IP      string
+		Port    string
+		Network string
 	}
 }
 
