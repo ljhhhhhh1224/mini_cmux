@@ -20,9 +20,8 @@ type config struct {
 		Network string
 	}
 	Client struct {
-		IP      string
-		Port    string
-		Network string
+		IP   string
+		Port string
 	}
 }
 

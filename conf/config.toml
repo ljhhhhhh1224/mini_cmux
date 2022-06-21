@@ -1,7 +1,6 @@
 [client]
 IP     = "127.0.0.1"
 Port   = ":23456"
-Network = "tcp"
 
 [server]
 Port   = ":23456"
