@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/ljhhhhhh1224/mini_cmux/utils"
 
 	hello_grpc "github.com/ljhhhhhh1224/mini_cmux/pb"
 
@@ -13,10 +14,15 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+var (
+	IP   = utils.Config().Client.IP
+	Port = utils.Config().Client.Port
+)
+
 func main() {
-	conn, err := grpc.Dial("localhost:23456", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(IP+Port, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	defer conn.Close()
 	client := hello_grpc.NewHelloGRPCClient(conn)
@@ -28,7 +34,7 @@ func main() {
 
 func httpGet() {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", "http://localhost:23456/get", nil)
+	req, err := http.NewRequest("GET", "http://"+IP+Port+"/get", nil)
 	if err != nil {
 		log.Println(err)
 	}
@@ -47,7 +53,7 @@ func httpGet() {
 
 func httpStop() {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", "http://localhost:23456/stop", nil)
+	req, err := http.NewRequest("GET", "http://"+IP+Port+"/stop", nil)
 	if err != nil {
 		log.Println(err)
 	}

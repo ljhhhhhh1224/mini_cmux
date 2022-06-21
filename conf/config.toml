@@ -1,7 +1,10 @@
 [client]
-    IP     = "127.0.0.1"
-    Port   = "23456"
+IP     = "127.0.0.1"
+Port   = ":23456"
+Network = "tcp"
 
 [server]
-    IP     = "127.0.0.1"
-    Port   = "23456"
+IP     = "127.0.0.1"
+Port   = ":23456"
+Network = "tcp"
+

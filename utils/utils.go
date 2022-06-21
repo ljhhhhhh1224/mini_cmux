@@ -14,6 +14,17 @@ import (
 )
 
 type config struct {
+	Debug  bool `toml:"debug"`
+	Server struct {
+		IP      string `toml:"IP"`
+		Port    string `toml:"Port"'`
+		Network string `toml:"Network"`
+	}
+	Client struct {
+		IP      string `toml:"IP"`
+		Port    string `toml:"Port"'`
+		Network string `toml:"Network"`
+	}
 }
 
 var (
@@ -36,11 +47,10 @@ func GetGrpcClientIP(ctx context.Context) (string, error) {
 
 func Config() *config {
 	once.Do(func() {
-		filePath, err := filepath.Abs("./ch3/config.toml")
+		filePath, err := filepath.Abs("./conf/config.toml")
 		if err != nil {
 			panic(err)
 		}
-		fmt.Printf("parse toml file once. filePath: %s\n", filePath)
 		if _, err := toml.DecodeFile(filePath, &cfg); err != nil {
 			panic(err)
 		}

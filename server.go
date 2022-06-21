@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ljhhhhhh1224/mini_cmux/utils"
+
 	mini_cmux2 "github.com/ljhhhhhh1224/mini_cmux/mini_cmux"
 
 	"github.com/ljhhhhhh1224/mini_cmux/ginServer"
@@ -17,7 +19,7 @@ import (
 )
 
 func main() {
-	l, err := net.Listen("tcp", ":23456")
+	l, err := net.Listen(utils.Config().Server.Network, utils.Config().Server.Port)
 	if err != nil {
 		logging.Error(err)
 	}
@@ -43,7 +45,7 @@ func main() {
 	//监听关闭信号
 	go syscallOperate.CloseProcess(m, grpcS, httpS)
 
-	logging.Info("------------------------服务器启动成功------------------------")
+	logging.Info("------------------------Server started successfully------------------------")
 	m.Serve()
 	time.Sleep(10 * time.Second)
 }
