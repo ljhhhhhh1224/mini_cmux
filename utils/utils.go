@@ -16,7 +16,6 @@ import (
 type config struct {
 	Debug  bool
 	Server struct {
-		IP      string
 		Port    string
 		Network string
 	}
