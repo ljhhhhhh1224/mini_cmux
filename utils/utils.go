@@ -14,11 +14,16 @@ import (
 )
 
 type config struct {
-	Debug  bool
+	LogSavePath string
+	LogSaveName string
+	LogFileExt  string
+	TimeFormat  string
+
 	Server struct {
 		Port    string
 		Network string
 	}
+
 	Client struct {
 		IP   string
 		Port string
@@ -43,6 +48,7 @@ func GetGrpcClientIP(ctx context.Context) (string, error) {
 	return addSlice[0], nil
 }
 
+// Config 读取配置文件
 func Config() *config {
 	once.Do(func() {
 		filePath, err := filepath.Abs("./conf/config.toml")

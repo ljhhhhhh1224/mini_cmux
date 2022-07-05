@@ -13,7 +13,6 @@ var ServerCloseErr = errors.New("server close")
 
 var ConnError = errors.New("conn error")
 
-// MatchWriter is a match that can also write response (say to do handshake).
 type MatchWriter func(io.Writer, io.Reader) bool
 
 // New 根据传入的net.listener实例化一个多路复用器

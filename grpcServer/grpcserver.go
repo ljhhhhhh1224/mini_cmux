@@ -20,6 +20,7 @@ func (s *Server) SayHi(ctx context.Context, req *hello_grpc.Req) (res *hello_grp
 	ip, err := utils.GetGrpcClientIP(ctx)
 	if err != nil {
 		logging.Error(err)
+		return
 	}
 	logging.Info("Receive Grpc SayHi request : ", req.GetMessage(), " from ", ip)
 	return &hello_grpc.Res{Message: "(GRPC)The server responds to the SayHi request"}, nil
@@ -29,6 +30,7 @@ func (s *Server) RequestStop(ctx context.Context, req *hello_grpc.Req) (res *hel
 	ip, err := utils.GetGrpcClientIP(ctx)
 	if err != nil {
 		logging.Error(err)
+		return
 	}
 	logging.Info("Receive Grpc Stop request : ", req.GetMessage(), " from ", ip)
 	syscallOperate.GetSyscallChan() <- syscall.SIGINT

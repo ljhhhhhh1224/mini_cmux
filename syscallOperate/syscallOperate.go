@@ -37,7 +37,6 @@ func CloseProcess(m mini_cmux2.CMux, g *grpc.Server, s *http.Server) {
 }
 
 func init() {
-
 	c = make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGTERM, syscall.SIGINT)
 }

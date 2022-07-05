@@ -5,13 +5,15 @@ import (
 	"log"
 	"os"
 	"time"
+
+	"github.com/ljhhhhhh1224/mini_cmux/utils"
 )
 
 var (
-	LogSavePath = "logs/"
-	LogSaveName = "log"
-	LogFileExt  = "log"
-	TimeFormat  = "20060102"
+	LogSavePath = utils.Config().LogSavePath
+	LogSaveName = utils.Config().LogSaveName
+	LogFileExt  = utils.Config().LogFileExt
+	TimeFormat  = utils.Config().TimeFormat
 )
 
 func getLogFilePath() string {

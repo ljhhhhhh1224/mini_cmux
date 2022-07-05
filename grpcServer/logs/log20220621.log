@@ -1,4 +1,0 @@
-[INFO][grpcserver.go:33]2022/06/21 16:31:32 Receive Grpc Stop request :  Request Stop from client(UT)  from  bufconn
-[INFO][grpcserver.go:24]2022/06/21 16:31:32 Receive Grpc SayHi request :  SayHi from client(UT)  from  bufconn
-[INFO][grpcserver.go:33]2022/06/21 16:34:08 Receive Grpc Stop request :  Request Stop from client(UT)  from  bufconn
-[INFO][grpcserver.go:24]2022/06/21 16:34:08 Receive Grpc SayHi request :  SayHi from client(UT)  from  bufconn

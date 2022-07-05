@@ -1,3 +1,8 @@
+LogSavePath = "logs/"
+LogSaveName = "log"
+LogFileExt  = "log"
+TimeFormat  = "20060102"
+
 [client]
 IP     = "127.0.0.1"
 Port   = ":23456"
@@ -5,4 +10,5 @@ Port   = ":23456"
 [server]
 Port   = ":23456"
 Network = "tcp"
+
 

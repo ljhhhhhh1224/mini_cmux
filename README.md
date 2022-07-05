@@ -4,44 +4,6 @@ mini_cmux支持在启动后只监听一个端口的情况下同时接受http访�
 
 `项目结构`
 ```
-├── buffer.go                       # mini_cmux buffer组件
-├── client
-│   └── client.go                   
-├── deployment.yaml                 # k8s 创建deployment
-├── docker-compose.yml              # docker-compose的yml文件
-├── Dockerfile                      # dockerfile
-├── server                         
-│   └── server.go                   # 服务端启动入口
-├── ginServer                       # http服务
-│   ├── ginserver.go
-│   └── ginserver_test.go
-├── go.mod
-├── go.sum              
-├── grpcServer                     
-│   ├── gprcserver_test.go
-│   └── grpcserver.go
-├── logging                         
-│   ├── file.go
-│   └── log.go
-├── Makefile                        # Makefile
-├── matchers.go                     # mini_cmux matchers组件
-├── mini_cmux.go                    
-├── pb                              
-│   ├── build.sh
-│   ├── hello_grpc_grpc.pb.go
-│   ├── hello_grpc.pb.go
-│   └── hello_grpc.proto
-├── README.md
-├── service.yaml                    # k8s 创建service
-├── syscallOperate                  
-│   ├── syscallOperate.go
-│   └── syscallOperate_test.go
-├── test                            # mini_cmux test
-│   └── mini_cmux_test.go
-└── utils                           # 工具方法
-    ├── utils.go
-    └── utils_test.go
-    
 ├── client
 │   └── client.go                   # 客户端访问入口
 ├── ginServer                       # http服务
@@ -64,7 +26,6 @@ mini_cmux支持在启动后只监听一个端口的情况下同时接受http访�
 │   ├── hello_grpc_grpc.pb.go
 │   ├── hello_grpc.pb.go
 │   └── hello_grpc.proto
-├── README.md
 ├── resource                        # 资源文件
 │   ├── deployment.yaml
 │   ├── docker-compose.yml
@@ -77,9 +38,11 @@ mini_cmux支持在启动后只监听一个端口的情况下同时接受http访�
 │   └── syscallOperate_test.go
 ├── test                            # mini_cmux单元测试
 │   └── mini_cmux_test.go
-└── utils                           # 工具方法
-    ├── utils.go
-    └── utils_test.go
+│── utils                           # 工具方法
+│    ├── utils.go
+│    └── utils_test.go
+├── conf                            # toml配置文件
+     └── config.toml
 ```
 
 
@@ -90,7 +53,8 @@ mini_cmux支持在启动后只监听一个端口的情况下同时接受http访�
 	if err != nil {
 		log.Fatal(err)
 	}
-    
+   
+	//创建mini_cmux实例
 	m := mini_cmux.New(l)
 
 	//匹配HTTP与GRPC
@@ -114,6 +78,17 @@ mini_cmux支持在启动后只监听一个端口的情况下同时接受http访�
 ```
 
 ## 部署方式
+首次部署需要对服务端与客户端的参数(ip、端口号、协议等信息)进行配置,配置文件为`conf/config.toml`,配置完成后即可开始部署项目
+```toml
+[client]
+IP     = "127.0.0.1"
+Port   = ":23456"
+
+[server]
+Port   = ":23456"
+Network = "tcp"
+```
+
 ***
 使用docker部署项目  
 docker安装步骤见官网 https://docs.docker.com/get-started/  
@@ -328,7 +303,8 @@ func (m *cMux) serve(c net.Conn, donec <-chan struct{}, wg *sync.WaitGroup) {
 	c.Close()
 }
 ```
-  
+
+
 
 
 
